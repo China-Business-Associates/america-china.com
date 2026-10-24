@@ -164,6 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const c3 = isZh ? 'ISO 9001 高可靠性工业制造质量管理体系' : 'ISO 9001 High-Reliability Manufacturing QA';
       const c4 = isZh ? '经多国重大市政与交通工程实地验证（瑞典、智利、中国等）' : 'Tested in International Field Projects (Sweden, Chile, China)';
       const ctaText = isZh ? '索取技术规格书与物料清单 (BOM)' : 'Request Technical Datasheet & BOM';
+      const utronUrl = isZh ? 'https://u-tron.com/index-zh.html' : 'https://u-tron.com';
+      const utronBtnText = isZh ? '访问制造基地 (u-tron.com) &nearr;' : 'Visit Manufacturer (u-tron.com) &nearr;';
 
       const detailHtml = `
         <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; align-items: start;">
@@ -184,8 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li>${c4}</li>
               </ul>
             </div>
-            <div style="margin-top: 1.25rem;">
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
               <a href="#contact" onclick="document.getElementById('infoModal').classList.remove('active'); document.body.style.overflow='';" class="btn btn-primary btn-sm">${ctaText}</a>
+              <a href="${utronUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-red btn-sm">${utronBtnText}</a>
             </div>
           </div>
         </div>
