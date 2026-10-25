@@ -12,6 +12,8 @@
   <link rel="alternate" hreflang="zh-CN" href="https://america-china.com/zh.html">
   <link rel="alternate" hreflang="x-default" href="https://america-china.com/">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="icon" type="image/jpeg" href="images/logos/meizhong-logo.jpg">
   <link rel="apple-touch-icon" href="images/logos/meizhong-logo.jpg">
   
@@ -1127,31 +1129,32 @@
           </p>
 
           <form id="inquiryForm">
+            <input type="text" name="fax" style="display:none;" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="form-row">
               <div class="form-group">
                 <label for="fullName" class="form-label">您的姓名 *</label>
-                <input type="text" id="fullName" class="form-control" placeholder="例如：李先生 / 张女士" required>
+                <input type="text" id="fullName" name="name" class="form-control" placeholder="例如：李先生 / 张女士" required>
               </div>
               <div class="form-group">
                 <label for="orgName" class="form-label">所属机构 / 企业全称 *</label>
-                <input type="text" id="orgName" class="form-control" placeholder="例如：某某科技有限公司 / 投资管理集团" required>
+                <input type="text" id="orgName" name="company" class="form-control" placeholder="例如：某某科技有限公司 / 投资管理集团" required>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label for="emailAddr" class="form-label">商务电子邮箱 *</label>
-                <input type="email" id="emailAddr" class="form-control" placeholder="contact@company.com" required>
+                <input type="email" id="emailAddr" name="email" class="form-control" placeholder="contact@company.com" required>
               </div>
               <div class="form-group">
                 <label for="phoneNum" class="form-label">联系电话 / 微信</label>
-                <input type="tel" id="phoneNum" class="form-control" placeholder="+86 138-0000-0000">
+                <input type="tel" id="phoneNum" name="phone" class="form-control" placeholder="+86 138-0000-0000">
               </div>
             </div>
 
             <div class="form-group">
               <label for="inquiryType" class="form-label">核心合作与咨询意向领域</label>
-              <select id="inquiryType" class="form-control">
+              <select id="inquiryType" name="inquiry_type" class="form-control">
                 <option value="wofe">中外合资企业或外商独资企业 (WOFE) 设立</option>
                 <option value="sourcing">供应链本地化采购与买方常驻代表 (QA/QC)</option>
                 <option value="licensing">跨境技术转让与知识产权合规许可</option>
@@ -1163,7 +1166,7 @@
 
             <div class="form-group">
               <label for="messageText" class="form-label">详细咨询诉求与项目说明 *</label>
-              <textarea id="messageText" class="form-control" placeholder="请简要概述贵机构的目标诉求、技术规格要求或预定合作周期..." required></textarea>
+              <textarea id="messageText" name="comment" class="form-control" placeholder="请简要概述贵机构的目标诉求、技术规格要求或预定合作周期..." required></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width: 100%;">发送高级咨询申请</button>

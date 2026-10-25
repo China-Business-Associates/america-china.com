@@ -197,27 +197,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 5. Contact Form Submission
+  // 5. Contact Form Submission via Cloudflare Worker & D1
   const contactForm = document.getElementById('inquiryForm');
   const formStatus = document.getElementById('formStatus');
 
   if (contactForm && formStatus) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = contactForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = isZh ? '正在发送咨询申请...' : 'Transmitting Inquiry...';
-      submitBtn.disabled = true;
+      const originalText = submitBtn ? submitBtn.textContent : '';
 
-      setTimeout(() => {
+      const nameInput = document.getElementById('fullName');
+      const orgInput = document.getElementById('orgName');
+      const emailInput = document.getElementById('emailAddr');
+      const phoneInput = document.getElementById('phoneNum');
+      const inquiryTypeInput = document.getElementById('inquiryType');
+      const messageInput = document.getElementById('messageText');
+      const faxInput = contactForm.querySelector('input[name="fax"]');
+
+      const name = nameInput ? nameInput.value.trim() : '';
+      const company = orgInput ? orgInput.value.trim() : '';
+      const email = emailInput ? emailInput.value.trim() : '';
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const inquiry_type = inquiryTypeInput ? inquiryTypeInput.value : '';
+      const comment = messageInput ? messageInput.value.trim() : '';
+      const fax = faxInput ? faxInput.value : '';
+
+      if (!name || !email || !comment) {
+        formStatus.className = 'form-status error';
+        formStatus.textContent = isZh
+          ? '请完整填写所有必填字段。'
+          : 'Please complete all required fields.';
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = isZh ? '正在发送咨询申请...' : 'Transmitting Inquiry...';
+      }
+
+      try {
+        const payload = {
+          name: name,
+          company: company,
+          email: email,
+          phone: phone,
+          inquiry_type: inquiry_type,
+          comment: comment,
+          fax: fax
+        };
+
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok || (!result.ok && !result.success)) {
+          throw new Error(result.error || (isZh ? '提交失败，请重试。' : 'Submission failed, please try again.'));
+        }
+
+        contactForm.reset();
         formStatus.className = 'form-status success';
         formStatus.textContent = isZh
-          ? '感谢您联络美中贸易联合公司。您的咨询信息已即时转送至我们的旧金山与北京高管办公室。我们的资深顾问将在一个工作日内与您联系。'
-          : 'Thank you for contacting China Business Associates. Your inquiry has been routed to our San Francisco and Beijing executive offices. Our senior advisor will respond within one business day.';
-        contactForm.reset();
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }, 700);
+          ? '感谢您联络美中贸易联合公司。您的咨询信息已即时转送至我们的高管办公室。我们的资深顾问将在一个工作日内与您联系。'
+          : 'Thank you for contacting China Business Associates. Your inquiry has been routed to our executive offices. Our senior advisor will respond within one business day.';
+      } catch (err) {
+        formStatus.className = 'form-status error';
+        formStatus.textContent = (isZh ? '提交失败：' : 'Submission failed: ') + err.message;
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
     });
   }
 
