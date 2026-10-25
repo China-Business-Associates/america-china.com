@@ -1,0 +1,6 @@
+{
+  "urlRewriteSearch": "^https://america-china\\.com/",
+  "urlRewriteReplace": "/",
+  "retryErrors": true,
+  "retryErrorsCount": 3
+}
