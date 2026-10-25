@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "america-china",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "america-china",
+      "database_id": "10f3bd94-eb4b-486d-8fa5-796c1d4bbe98"
+    }
+  ]
+}
