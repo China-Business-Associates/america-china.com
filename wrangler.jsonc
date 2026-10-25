@@ -12,5 +12,16 @@
       "database_name": "america-china",
       "database_id": "10f3bd94-eb4b-486d-8fa5-796c1d4bbe98"
     }
-  ]
+  ],
+  "routes": [
+    {
+      "pattern": "america-china.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.america-china.com",
+      "custom_domain": true
+    }
+  ],
+  "workers_dev": false
 }
