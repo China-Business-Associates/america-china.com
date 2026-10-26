@@ -4,6 +4,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const isZh = document.documentElement.lang.startsWith('zh') || window.location.pathname.includes('zh');
+
   // 1. Sticky Navbar State
   const navbar = document.querySelector('.navbar');
   window.addEventListener('scroll', () => {
@@ -32,35 +34,198 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Product Filtering
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const productCards = document.querySelectorAll('.product-card');
+  // 3. Product Search & Category Filtering
+  const filterButtons = document.querySelectorAll('.tab-btn, .filter-btn');
+  const productCards = Array.from(document.querySelectorAll('.product-card'));
+  const searchInput = document.getElementById('productSearchInput');
+  const clearSearchBtn = document.getElementById('clearProductSearch');
+  const searchStats = document.getElementById('productSearchStats');
+  const keywordChips = document.querySelectorAll('.keyword-chip');
+  const noProductsFound = document.getElementById('noProductsFound');
+  const noProductsDesc = document.getElementById('noProductsDesc');
+  const btnResetSearch = document.getElementById('btnResetSearch');
 
+  let activeCategory = 'all';
+  let activeSearchQuery = '';
+
+  // Index product cards for rapid keyword matching
+  const cardData = productCards.map(card => {
+    const title = card.querySelector('.product-title') ? card.querySelector('.product-title').textContent : '';
+    const badge = card.querySelector('.product-category-tag') ? card.querySelector('.product-category-tag').textContent : '';
+    const specs = card.querySelector('.product-specs') ? card.querySelector('.product-specs').textContent : '';
+    const desc = card.querySelector('.product-desc') ? card.querySelector('.product-desc').textContent : '';
+    const footerPart = card.querySelector('.product-footer') ? card.querySelector('.product-footer').textContent : '';
+    const category = card.getAttribute('data-category') || '';
+    const searchText = [title, badge, specs, desc, footerPart, category].join(' ').toLowerCase();
+
+    return {
+      element: card,
+      category: category,
+      searchText: searchText
+    };
+  });
+
+  const updateProductFilter = () => {
+    const query = activeSearchQuery.trim().toLowerCase();
+    const queryTokens = query.length > 0 ? query.split(/\s+/) : [];
+
+    let visibleCount = 0;
+    let otherCatMatches = 0;
+
+    cardData.forEach(item => {
+      const matchesCat = (activeCategory === 'all' || item.category === activeCategory);
+      const matchesQuery = queryTokens.length === 0 || queryTokens.every(token => item.searchText.includes(token));
+
+      if (matchesQuery && !matchesCat) {
+        otherCatMatches++;
+      }
+
+      if (matchesCat && matchesQuery) {
+        item.element.style.display = 'flex';
+        item.element.style.opacity = '1';
+        item.element.style.transform = 'translateY(0)';
+        visibleCount++;
+      } else {
+        item.element.style.display = 'none';
+      }
+    });
+
+    if (clearSearchBtn) {
+      clearSearchBtn.style.display = query.length > 0 ? 'inline-flex' : 'none';
+    }
+
+    if (searchStats) {
+      if (queryTokens.length === 0 && activeCategory === 'all') {
+        searchStats.textContent = isZh ? `共 ${cardData.length} 款产品` : `${cardData.length} products`;
+      } else {
+        searchStats.textContent = isZh
+          ? `显示 ${visibleCount} / ${cardData.length} 款产品`
+          : `Showing ${visibleCount} of ${cardData.length} products`;
+      }
+    }
+
+    // Update keyword chip active state
+    keywordChips.forEach(chip => {
+      const kw = (chip.getAttribute('data-keyword') || '').toLowerCase();
+      if (query.length > 0 && (query === kw || query.includes(kw) || kw.includes(query))) {
+        chip.classList.add('active');
+      } else {
+        chip.classList.remove('active');
+      }
+    });
+
+    // Empty state handling
+    if (noProductsFound) {
+      if (visibleCount === 0) {
+        noProductsFound.style.display = 'block';
+        if (noProductsDesc) {
+          const safeQuery = query.replace(/[<>&"]/g, '');
+          if (otherCatMatches > 0 && activeCategory !== 'all') {
+            noProductsDesc.innerHTML = isZh
+              ? `当前分类下未找到 “<span class="searched-term">${safeQuery}</span>” 相关产品，但在其他分类中找到 ${otherCatMatches} 款匹配产品。`
+              : `No products matched "<span class="searched-term">${safeQuery}</span>" in this category. Found ${otherCatMatches} matching product(s) in other categories.`;
+          } else {
+            noProductsDesc.innerHTML = isZh
+              ? `未找到与 “<span class="searched-term">${safeQuery}</span>” 相关的产品。请尝试其他关键词或重置筛选。`
+              : `No products matched "<span class="searched-term">${safeQuery}</span>". Try another search keyword or reset filters.`;
+          }
+        }
+      } else {
+        noProductsFound.style.display = 'none';
+      }
+    }
+  };
+
+  // Event: Category Filter Buttons
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       filterButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      const filter = btn.getAttribute('data-filter');
-
-      productCards.forEach(card => {
-        const category = card.getAttribute('data-category');
-        if (filter === 'all' || category === filter) {
-          card.style.display = 'flex';
-          setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-          }, 10);
-        } else {
-          card.style.opacity = '0';
-          card.style.transform = 'translateY(8px)';
-          setTimeout(() => {
-            card.style.display = 'none';
-          }, 200);
-        }
-      });
+      activeCategory = btn.getAttribute('data-filter') || 'all';
+      updateProductFilter();
     });
   });
+
+  // Event: Search Input
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      activeSearchQuery = searchInput.value;
+      updateProductFilter();
+    });
+
+    searchInput.addEventListener('search', () => {
+      activeSearchQuery = searchInput.value;
+      updateProductFilter();
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        activeSearchQuery = '';
+        updateProductFilter();
+      }
+    });
+  }
+
+  // Event: Clear Search Button
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      activeSearchQuery = '';
+      updateProductFilter();
+    });
+  }
+
+  // Event: Keyword Chips
+  keywordChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const kw = chip.getAttribute('data-keyword') || '';
+      if (activeSearchQuery.trim().toLowerCase() === kw.toLowerCase()) {
+        activeSearchQuery = '';
+        if (searchInput) searchInput.value = '';
+      } else {
+        activeSearchQuery = kw;
+        if (searchInput) searchInput.value = kw;
+
+        // Auto-switch to 'all' if active tab has no match for this keyword
+        const hasMatchInCurrent = cardData.some(item =>
+          (activeCategory === 'all' || item.category === activeCategory) &&
+          item.searchText.includes(kw.toLowerCase())
+        );
+        if (!hasMatchInCurrent) {
+          activeCategory = 'all';
+          filterButtons.forEach(b => {
+            if (b.getAttribute('data-filter') === 'all') {
+              b.classList.add('active');
+            } else {
+              b.classList.remove('active');
+            }
+          });
+        }
+      }
+      updateProductFilter();
+    });
+  });
+
+  // Event: Reset Filters Button in Empty State
+  if (btnResetSearch) {
+    btnResetSearch.addEventListener('click', () => {
+      activeSearchQuery = '';
+      if (searchInput) searchInput.value = '';
+      activeCategory = 'all';
+      filterButtons.forEach(b => {
+        if (b.getAttribute('data-filter') === 'all') {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      updateProductFilter();
+    });
+  }
 
   // 4. Modal Window Controls
   const modalOverlay = document.getElementById('infoModal');
@@ -97,8 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
       closeModal();
     }
   });
-
-  const isZh = document.documentElement.lang.startsWith('zh') || window.location.pathname.includes('zh');
 
   // Trigger: Letter from the President
   const readLetterBtn = document.getElementById('readPresidentLetterBtn');

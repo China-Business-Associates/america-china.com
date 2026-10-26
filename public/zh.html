@@ -730,7 +730,7 @@
 
           <div class="venture-logo-wrap">
             <a href="https://u-tron.com/index-zh.html" target="_blank" rel="noopener noreferrer" title="访问优创官方网站">
-              <img src="images/logos/Utronlogohighres.jpg" alt="北京优创电子有限公司官方注册商标" decoding="async" loading="lazy" width="911" height="514">
+              <img src="images/logos/Utronlogohighres.jpg" alt="北京优创电子有限公司官方注册商标" decoding="async" loading="lazy" width="911" height="514" style="height: 90px; width: auto; max-width: 100%; aspect-ratio: 911 / 514; object-fit: contain; margin: 0 auto; display: block;">
             </a>
             <div style="font-size: 0.8125rem; color: var(--neutral-600); line-height: 1.5;">
               <strong>北京优创电子有限公司</strong><br>
@@ -750,11 +750,48 @@
       </div>
 
       <!-- 产品分类过滤器按钮 -->
-      <div class="products-nav">
-        <button type="button" class="filter-btn active" data-filter="all">全部产品系列</button>
-        <button type="button" class="filter-btn" data-filter="led">大功率半导体 LED 照明</button>
-        <button type="button" class="filter-btn" data-filter="its">智能交通系统 (ITS)</button>
-        <button type="button" class="filter-btn" data-filter="telecom">工业通信与遥测</button>
+      <div class="product-tabs-wrapper">
+        <div class="product-tabs">
+          <button type="button" class="tab-btn active" data-filter="all">全部产品系列</button>
+          <button type="button" class="tab-btn" data-filter="led">大功率半导体 LED 照明</button>
+          <button type="button" class="tab-btn" data-filter="its">智能交通系统 (ITS)</button>
+          <button type="button" class="tab-btn" data-filter="telecom">工业通信与遥测</button>
+        </div>
+      </div>
+
+      <!-- 产品搜索与关键词过滤栏 -->
+      <div class="product-search-filter-wrapper">
+        <div class="product-search-box">
+          <span class="search-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input
+            type="search"
+            id="productSearchInput"
+            class="product-search-input"
+            placeholder="按产品型号、名称、应用领域或参数搜索（如：路灯、隧道、交通、Cree）..."
+            aria-label="搜索产品"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button type="button" id="clearProductSearch" class="product-search-clear" aria-label="清除搜索" title="清除搜索" style="display: none;">&times;</button>
+          <span class="product-search-stats" id="productSearchStats">共 12 款产品</span>
+        </div>
+
+        <!-- 匹配关键词标签 -->
+        <div class="product-keywords-row">
+          <span class="keywords-label">快捷关键词：</span>
+          <div class="keyword-chips" id="keywordChips">
+            <button type="button" class="keyword-chip" data-keyword="路灯">市政路灯</button>
+            <button type="button" class="keyword-chip" data-keyword="隧道">隧道照明</button>
+            <button type="button" class="keyword-chip" data-keyword="工矿">工业高顶</button>
+            <button type="button" class="keyword-chip" data-keyword="植物">植物照明</button>
+            <button type="button" class="keyword-chip" data-keyword="交通">交通控制</button>
+            <button type="button" class="keyword-chip" data-keyword="交换机">工业交换机</button>
+            <button type="button" class="keyword-chip" data-keyword="太阳能">太阳能</button>
+            <button type="button" class="keyword-chip" data-keyword="Cree">Cree</button>
+          </div>
+        </div>
       </div>
 
       <!-- 产品网格 -->
@@ -986,6 +1023,16 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- 搜索无结果提示 -->
+      <div id="noProductsFound" class="no-products-found" style="display: none;">
+        <div class="no-products-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+        </div>
+        <h4 class="no-products-title">未找到匹配的产品</h4>
+        <p class="no-products-desc" id="noProductsDesc">未找到符合条件的产品。请尝试其他关键词或重置筛选条件。</p>
+        <button type="button" class="btn-reset-search" id="btnResetSearch">显示全系产品</button>
       </div>
     </div>
   </section>
